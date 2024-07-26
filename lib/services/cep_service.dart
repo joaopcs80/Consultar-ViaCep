@@ -1,29 +1,25 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:dio/dio.dart';
 
 class CepService {
-  static Future<String> consultarCEP(String cep) async {
-    final url = Uri.parse('https://viacep.com.br/ws/$cep/json/');
-    try {
-      final response = await http.get(url);
+  final Dio _dio = Dio();
+  final String _viaCepUrl = 'https://viacep.com.br/ws';
 
-      if (response.statusCode == 200) {
-        var data = json.decode(response.body);
-        if (data.containsKey('erro')) {
-          return 'CEP não encontrado';
-        } else {
-          return '''
-          Logradouro: ${data['logradouro']}
-          Bairro: ${data['bairro']}
-          Cidade: ${data['localidade']}
-          Estado: ${data['uf']}
-          ''';
-        }
-      } else {
-        return 'Falha na requisição: ${response.statusCode}';
+  Future<Map<String, dynamic>?> getCepData(String cep) async {
+    try {
+      final formattedCep = cep.replaceAll(RegExp(r'\D'), '');
+
+      if (formattedCep.length != 8) {
+        throw Exception('CEP inválido. O CEP deve ter 8 dígitos.');
       }
-    } catch (error) {
-      return 'Erro: $error';
+
+      final response = await _dio.get('$_viaCepUrl/$formattedCep/json/');
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception('Falha ao buscar dados do ViaCEP. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erro ao buscar dados do ViaCEP: $e');
     }
   }
 }

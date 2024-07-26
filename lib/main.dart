@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import '../page/cep_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(MyApp());
 }
 
@@ -9,11 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Consulta CEP ViaCEP',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomeScreen(),
+      home: CepPage(),
     );
   }
 }
